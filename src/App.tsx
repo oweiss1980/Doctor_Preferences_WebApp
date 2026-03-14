@@ -22,6 +22,7 @@ const mobileWeekdayNames = ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש�
 const recurringWeekdayIndexes = [0, 1, 2, 3, 4, 5];
 const monthNames = ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'];
 const WEBHOOK_URL = 'https://hook.eu1.make.com/f2xwebsgu20ypcp8uf1c86as10peonq9';
+
 const initialClinics = ['קריית אונו', 'חיפה', 'ירושלים', 'באר שבע'];
 
 type SelectedDay = {
@@ -447,10 +448,9 @@ export default function ProdocsClinicAvailabilityApp() {
     });
   };
 
-const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) => {
-  setRecurringDays((prev) => {
-    const current: RecurringRule =
-      prev[weekdayIndex] ?? {
+  const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) => {
+    setRecurringDays((prev) => {
+      const current: RecurringRule = prev[weekdayIndex] ?? {
         enabled: false,
         clinic: '',
         fromHour: '',
@@ -458,15 +458,15 @@ const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) =>
         note: '',
       };
 
-    return {
-      ...prev,
-      [weekdayIndex]: {
-        ...current,
-        ...patch,
-      },
-    };
-  });
-};
+      return {
+        ...prev,
+        [weekdayIndex]: {
+          ...current,
+          ...patch,
+        },
+      };
+    });
+  };
 
   const applyRecurring = () => {
     const next = { ...selectedDays };
@@ -690,7 +690,7 @@ const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) =>
   };
 
   return (
-    <div className="min-h-screen p-4 md:p-8" dir="rtl" style={{ background: BRAND.bg }}>
+    <div className="min-h-screen p-3 md:p-8" dir="rtl" style={{ background: BRAND.bg }}>
       <div
         ref={pdfRenderRef}
         dir="rtl"
@@ -779,13 +779,13 @@ const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) =>
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl space-y-6">
+      <div className="mx-auto max-w-7xl space-y-4 md:space-y-6">
         <Card className={cn('rounded-[24px] border-0 shadow-sm overflow-hidden', !isMobile && 'sticky top-4 z-10')}>
           <div className="h-2" style={{ background: `linear-gradient(90deg, ${BRAND.dark}, ${BRAND.mint})` }} />
-          <CardContent className="py-4 px-4 md:px-6">
-            <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-4 items-center">
+          <CardContent className={cn('py-4 px-4 md:px-6', isMobile && 'pt-4')}>
+            <div className={cn('grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-4 items-center', isMobile && 'gap-3')}>
               <div className="flex flex-col items-center text-center">
-                <img src={logoUrl} alt="PRODOCS" className="w-44 md:w-56 h-auto mb-2" crossOrigin="anonymous" referrerPolicy="no-referrer" />
+                <img src={logoUrl} alt="PRODOCS" className="w-40 md:w-56 h-auto mb-2" crossOrigin="anonymous" referrerPolicy="no-referrer" />
                 <div className="text-lg md:text-xl font-semibold" style={{ color: BRAND.dark }}>פרודוקס - שירותי רפואה</div>
                 <div className="text-xs md:text-sm mt-1" style={{ color: BRAND.textSoft }}>טופס בחירת זמינות למרפאות – 6 חודשים קדימה</div>
               </div>
@@ -807,11 +807,11 @@ const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) =>
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          <div className="xl:col-span-2 space-y-6">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 md:gap-6">
+          <div className="xl:col-span-2 space-y-4 md:space-y-6">
             <Card className="rounded-[28px] border-0 shadow-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2" style={{ color: BRAND.dark }}>
+              <CardHeader className={isMobile ? 'p-4 pb-3' : ''}>
+                <CardTitle className={cn('flex items-center gap-2', isMobile && 'flex-wrap')} style={{ color: BRAND.dark }}>
                   <Building2 className="h-5 w-5" />
                   רשימת מרפאות מועדפת
                   <span className="text-sm font-normal" style={{ color: BRAND.textSoft }}>
@@ -820,7 +820,7 @@ const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) =>
                 </CardTitle>
               </CardHeader>
 
-              <CardContent className="space-y-4">
+              <CardContent className={cn('space-y-4', isMobile && 'p-4 pt-0')}>
                 <div className="flex flex-wrap gap-2">
                   {clinicOptions.map((clinic) => (
                     <Badge key={clinic} className="rounded-full px-3 py-1" style={{ background: '#EAF3F0', color: BRAND.dark }}>
@@ -829,16 +829,18 @@ const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) =>
                   ))}
                 </div>
 
-                <div className="flex gap-2">
+                <div className={cn('flex gap-2', isMobile && 'flex-col')}>
                   <Input value={newClinic} onChange={(e) => setNewClinic(e.target.value)} placeholder="הוסף מרפאה" className="rounded-2xl" />
-                  <Button onClick={addClinicOption} className="rounded-2xl" style={{ background: BRAND.mint, color: '#fff' }}>הוסף</Button>
+                  <Button onClick={addClinicOption} className="rounded-2xl" style={{ background: BRAND.mint, color: '#fff', ...(isMobile ? { width: '100%' } : {}) }}>
+                    הוסף
+                  </Button>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="rounded-[28px] border-0 shadow-sm">
-              <CardHeader>
-                <CardTitle style={{ color: BRAND.dark }}>
+              <CardHeader className={isMobile ? 'p-4 pb-3' : ''}>
+                <CardTitle className={isMobile ? 'leading-7' : ''} style={{ color: BRAND.dark }}>
                   זמינות קבועה לפי יום בשבוע
                   <span className="text-sm font-normal" style={{ color: BRAND.textSoft }}>
                     {' '}– המועדים האפשריים הקבועים לצורך מילוי אוטומטי לחודשים קדימה. אפשר גם לבחור באופן פרטני ביומן מטה.
@@ -846,7 +848,7 @@ const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) =>
                 </CardTitle>
               </CardHeader>
 
-              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <CardContent className={cn('grid grid-cols-1 md:grid-cols-2 gap-4', isMobile && 'p-4 pt-0')}>
                 {recurringWeekdayIndexes.map((idx) => {
                   const name = weekdayNames[idx];
                   const rule = recurringDays[idx] || { enabled: false, clinic: '', fromHour: '', toHour: '', note: '' };
@@ -905,7 +907,11 @@ const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) =>
                 })}
 
                 <div className="md:col-span-2 flex justify-end">
-                  <Button onClick={applyRecurring} className="rounded-2xl" style={{ background: BRAND.dark }}>
+                  <Button
+                    onClick={applyRecurring}
+                    className="rounded-2xl"
+                    style={{ background: BRAND.dark, ...(isMobile ? { width: '100%' } : {}) }}
+                  >
                     החל קביעות על התקופה הפתוחה
                   </Button>
                 </div>
@@ -913,9 +919,9 @@ const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) =>
             </Card>
 
             <Card className="rounded-[28px] border-0 shadow-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2" style={{ color: BRAND.dark }}>
-                  <CalendarDays className="h-5 w-5" />
+              <CardHeader className={isMobile ? 'p-4 pb-3' : ''}>
+                <CardTitle className={cn('flex items-center gap-2', isMobile && 'items-start')} style={{ color: BRAND.dark }}>
+                  <CalendarDays className="h-5 w-5 shrink-0 mt-0.5" />
                   בחירה ביומן
                   <span className="text-sm font-normal" style={{ color: BRAND.textSoft }}>
                     {' '}– לא ניתן לשנות את השבועיים הקרובים מהיום. ניתן לבחור או להסיר באופן פרטני כל אחד מהתאריכים או להוסיף הערה פרטנית לכל יום שנבחר.
@@ -923,15 +929,25 @@ const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) =>
                 </CardTitle>
               </CardHeader>
 
-              <CardContent className="space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
+              <CardContent className={cn('space-y-4', isMobile && 'p-4 pt-0')}>
+                <div className={cn('flex flex-wrap items-center justify-between gap-3', isMobile && 'flex-col items-stretch')}>
                   <div className="text-sm" style={{ color: BRAND.textSoft }}>
                     {`התאריכים עד ${formatDisplayDate(addDays(freezeUntil, -1))} נעולים לעריכה. ימי שבת אינם ניתנים לבחירה.`}
                   </div>
 
                   <div
-                    className="flex flex-wrap gap-2"
-                    style={isMobile ? { width: '100%', overflowX: 'auto', flexWrap: 'nowrap', paddingBottom: 4 } : undefined}
+                    className="flex gap-2"
+                    style={
+                      isMobile
+                        ? {
+                            width: '100%',
+                            overflowX: 'auto',
+                            flexWrap: 'nowrap',
+                            paddingBottom: 6,
+                            WebkitOverflowScrolling: 'touch',
+                          }
+                        : { flexWrap: 'wrap' }
+                    }
                   >
                     {visibleMonths.map((m) => {
                       const active = m.getMonth() === activeMonth.getMonth() && m.getFullYear() === activeMonth.getFullYear();
@@ -944,7 +960,14 @@ const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) =>
                           className="rounded-full"
                           style={{
                             ...(active ? { background: BRAND.dark } : { borderColor: BRAND.border, color: BRAND.dark }),
-                            ...(isMobile ? { whiteSpace: 'nowrap', flex: '0 0 auto', paddingInline: '0.85rem' } : {}),
+                            ...(isMobile
+                              ? {
+                                  whiteSpace: 'nowrap',
+                                  flex: '0 0 auto',
+                                  minHeight: 42,
+                                  paddingInline: '0.9rem',
+                                }
+                              : {}),
                           }}
                         >
                           {monthNames[m.getMonth()]} {m.getFullYear()}
@@ -959,7 +982,15 @@ const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) =>
 
                 <div
                   className="grid grid-cols-7"
-                  style={{ gap: isMobile ? '0.3rem' : '0.5rem' }}
+                  style={{
+                    gap: isMobile ? '0.2rem' : '0.5rem',
+                    position: isMobile ? 'sticky' : undefined,
+                    top: isMobile ? 0 : undefined,
+                    zIndex: isMobile ? 2 : undefined,
+                    background: isMobile ? '#FFFFFF' : undefined,
+                    paddingTop: isMobile ? 2 : undefined,
+                    paddingBottom: isMobile ? 4 : undefined,
+                  }}
                 >
                   {(isMobile ? mobileWeekdayNames : weekdayNames).map((d, idx) => (
                     <div
@@ -967,7 +998,7 @@ const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) =>
                       className="text-center font-medium py-2"
                       style={{
                         color: idx === 6 ? BRAND.danger : BRAND.dark,
-                        fontSize: isMobile ? '0.75rem' : '0.875rem',
+                        fontSize: isMobile ? '0.72rem' : '0.875rem',
                       }}
                     >
                       {d}
@@ -977,15 +1008,18 @@ const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) =>
 
                 <div
                   className="grid grid-cols-7"
-                  style={{ gap: isMobile ? '0.3rem' : '0.5rem' }}
+                  style={{
+                    gap: isMobile ? '0.2rem' : '0.5rem',
+                    alignItems: 'stretch',
+                  }}
                 >
                   {monthGrid.map((date, idx) => {
                     if (!date) {
                       return (
                         <div
                           key={idx}
-                          className="rounded-[20px]"
-                          style={{ height: isMobile ? 84 : 112 }}
+                          className="rounded-[16px]"
+                          style={{ height: isMobile ? 78 : 112 }}
                         />
                       );
                     }
@@ -1001,10 +1035,10 @@ const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) =>
                         type="button"
                         onClick={() => toggleDay(date)}
                         disabled={disabled}
-                        className="rounded-[20px] border text-right transition flex flex-col"
+                        className="rounded-[16px] md:rounded-[20px] border text-right transition flex flex-col"
                         style={{
-                          minHeight: isMobile ? 104 : 144,
-                          padding: isMobile ? '0.45rem' : '0.5rem',
+                          minHeight: isMobile ? 96 : 144,
+                          padding: isMobile ? '0.35rem' : '0.5rem',
                           borderColor: selected ? BRAND.selectedBorder : BRAND.border,
                           borderWidth: selected ? 2 : 1,
                           background: disabled ? '#EEF2F2' : selected ? BRAND.selectedBg : '#FFF',
@@ -1012,50 +1046,54 @@ const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) =>
                           boxShadow: selected ? '0 0 0 3px rgba(116,176,155,0.32), 0 10px 24px rgba(28,78,87,0.12)' : 'none',
                           opacity: disabled ? 0.95 : 1,
                           cursor: disabled ? 'not-allowed' : 'pointer',
+                          touchAction: 'manipulation',
+                          WebkitTapHighlightColor: 'transparent',
                         }}
                       >
                         <div className="flex items-start justify-between gap-1">
                           <div
                             style={{
-                              fontSize: isMobile ? '0.72rem' : '1rem',
+                              fontSize: isMobile ? '0.63rem' : '1rem',
                               fontWeight: 700,
                               lineHeight: 1.2,
                             }}
                           >
-                            {formatDisplayDate(date)}
+                            {isMobile ? date.getDate() : formatDisplayDate(date)}
                           </div>
                         </div>
 
                         <div
-                          className="mt-2"
+                          className="mt-1 md:mt-2"
                           style={{
-                            fontSize: isMobile ? '0.62rem' : '0.75rem',
-                            lineHeight: isMobile ? 1.35 : 1.6,
+                            fontSize: isMobile ? '0.52rem' : '0.75rem',
+                            lineHeight: isMobile ? 1.25 : 1.6,
                           }}
                         >
                           {date.getDay() === 6
-                            ? 'שבת - לא זמין'
+                            ? 'שבת'
                             : disabled
-                              ? 'נעול לעריכה'
+                              ? 'נעול'
                               : selected
                                 ? `${selectedDays[key].fromHour}–${selectedDays[key].toHour}`
-                                : 'לחץ לבחירה'}
+                                : 'בחר'}
                         </div>
 
                         <div
-                          className="mt-2 rounded-xl break-words whitespace-normal font-semibold"
+                          className="mt-1 md:mt-2 rounded-lg md:rounded-xl break-words whitespace-normal font-semibold"
                           style={{
-                            minHeight: isMobile ? 34 : 52,
-                            padding: isMobile ? '0.35rem 0.4rem' : '0.5rem',
-                            fontSize: isMobile ? '0.58rem' : '0.75rem',
-                            lineHeight: isMobile ? 1.25 : 1.6,
+                            minHeight: isMobile ? 24 : 52,
+                            padding: isMobile ? '0.18rem 0.25rem' : '0.5rem',
+                            fontSize: isMobile ? '0.47rem' : '0.75rem',
+                            lineHeight: isMobile ? 1.15 : 1.6,
                             background: holidays.length ? '#E2F3EC' : 'transparent',
                             color: holidays.length ? BRAND.dark : (disabled ? '#92A8AD' : BRAND.textSoft),
                             border: holidays.length ? `1px solid ${BRAND.mint}` : 'none',
                             overflow: 'hidden',
                           }}
                         >
-                          {holidays.length ? holidays.join(' | ') : ' '}
+                          {holidays.length
+                            ? (isMobile ? holidays[0] : holidays.join(' | '))
+                            : ' '}
                         </div>
 
                         {selected ? (
@@ -1064,13 +1102,14 @@ const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) =>
                             style={{
                               fontWeight: 700,
                               color: BRAND.dark,
-                              fontSize: isMobile ? '0.62rem' : '0.75rem',
+                              fontSize: isMobile ? '0.52rem' : '0.75rem',
+                              paddingTop: isMobile ? 2 : 0,
                             }}
                           >
                             {selectedDays[key].clinic || 'נבחר'}
                           </div>
                         ) : (
-                          <div className="mt-auto opacity-0" style={{ fontSize: isMobile ? '0.62rem' : '0.75rem' }}>.</div>
+                          <div className="mt-auto opacity-0" style={{ fontSize: isMobile ? '0.52rem' : '0.75rem' }}>.</div>
                         )}
                       </button>
                     );
@@ -1080,13 +1119,13 @@ const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) =>
             </Card>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-4 md:space-y-6">
             <Card className={cn('rounded-[28px] border-0 shadow-sm', !isMobile && 'sticky top-6')}>
-              <CardHeader>
+              <CardHeader className={isMobile ? 'p-4 pb-3' : ''}>
                 <CardTitle style={{ color: BRAND.dark }}>ימים שנבחרו</CardTitle>
               </CardHeader>
 
-              <CardContent className="space-y-4 max-h-[78vh] overflow-auto">
+              <CardContent className={cn('space-y-4 max-h-[78vh] overflow-auto', isMobile && 'p-4 pt-0 max-h-none overflow-visible')}>
                 <div>
                   <Label>הערה כללית</Label>
                   <Textarea
@@ -1114,7 +1153,7 @@ const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) =>
                           background: BRAND.selectedBg,
                         }}
                       >
-                        <div className="flex items-center justify-between gap-2">
+                        <div className={cn('flex items-center justify-between gap-2', isMobile && 'flex-col items-start')}>
                           <div>
                             <div className="font-medium" style={{ color: BRAND.dark }}>
                               {formatDisplayDate(d)} | {weekdayNames[d.getDay()]}
@@ -1189,18 +1228,28 @@ const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) =>
                       color: status.type === 'error' ? BRAND.danger : BRAND.dark,
                     }}
                   >
-                    <AlertCircle className="h-4 w-4 mt-0.5" />
+                    <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
                     {status.text}
                   </div>
                 ) : null}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <Button onClick={handleSubmit} disabled={isSubmitting} className="rounded-2xl" style={{ background: BRAND.dark }}>
+                  <Button
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                    className="rounded-2xl"
+                    style={{ background: BRAND.dark, ...(isMobile ? { width: '100%' } : {}) }}
+                  >
                     <Send className="h-4 w-4 ml-2" />
                     {isSubmitting ? 'שולח…' : 'שלח / עדכן'}
                   </Button>
 
-                  <Button onClick={handleReset} variant="outline" className="rounded-2xl" style={{ borderColor: BRAND.border, color: BRAND.dark }}>
+                  <Button
+                    onClick={handleReset}
+                    variant="outline"
+                    className="rounded-2xl"
+                    style={{ borderColor: BRAND.border, color: BRAND.dark, ...(isMobile ? { width: '100%' } : {}) }}
+                  >
                     <RotateCcw className="h-4 w-4 ml-2" />
                     איפוס
                   </Button>

@@ -447,20 +447,26 @@ export default function ProdocsClinicAvailabilityApp() {
     });
   };
 
-  const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) => {
-    setRecurringDays((prev) => ({
-      ...prev,
-      [weekdayIndex]: {
+const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) => {
+  setRecurringDays((prev) => {
+    const current: RecurringRule =
+      prev[weekdayIndex] ?? {
         enabled: false,
         clinic: '',
         fromHour: '',
         toHour: '',
         note: '',
-        ...(prev[weekdayIndex] || {}),
+      };
+
+    return {
+      ...prev,
+      [weekdayIndex]: {
+        ...current,
         ...patch,
       },
-    }));
-  };
+    };
+  });
+};
 
   const applyRecurring = () => {
     const next = { ...selectedDays };

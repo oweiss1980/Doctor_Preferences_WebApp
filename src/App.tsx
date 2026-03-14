@@ -18,6 +18,7 @@ const BRAND = {
 };
 
 const weekdayNames = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+const mobileWeekdayNames = ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳'];
 const recurringWeekdayIndexes = [0, 1, 2, 3, 4, 5];
 const monthNames = ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'];
 const WEBHOOK_URL = 'https://hook.eu1.make.com/f2xwebsgu20ypcp8uf1c86as10peonq9';
@@ -358,10 +359,26 @@ export default function ProdocsClinicAvailabilityApp() {
   const [status, setStatus] = useState<StatusState>({ type: '', text: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [recurringDays, setRecurringDays] = useState<Record<number, RecurringRule>>({});
+  const [isMobile, setIsMobile] = useState(false);
 
   const visibleMonths = useMemo(() => Array.from({ length: 6 }, (_, i) => addMonths(today, i)), [today]);
   const monthGrid = useMemo(() => getMonthGrid(activeMonth), [activeMonth]);
   const selectedEntries = useMemo(() => Object.entries(selectedDays).sort((a, b) => a[0].localeCompare(b[0])), [selectedDays]);
+
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 767px)');
+    const updateIsMobile = () => setIsMobile(media.matches);
+
+    updateIsMobile();
+
+    if (media.addEventListener) {
+      media.addEventListener('change', updateIsMobile);
+      return () => media.removeEventListener('change', updateIsMobile);
+    }
+
+    media.addListener(updateIsMobile);
+    return () => media.removeListener(updateIsMobile);
+  }, []);
 
   useEffect(() => {
     const url = `https://www.hebcal.com/hebcal?cfg=json&v=1&i=on&maj=on&min=on&mod=on&nx=on&mf=on&ss=on&start=${formatISO(rangeStart)}&end=${formatISO(rangeEnd)}&lg=h`;
@@ -431,20 +448,19 @@ export default function ProdocsClinicAvailabilityApp() {
   };
 
   const updateRecurring = (weekdayIndex: number, patch: Partial<RecurringRule>) => {
-  setRecurringDays((prev) => ({
-    ...prev,
-    [weekdayIndex]: {
-      ...(prev[weekdayIndex] ?? {
+    setRecurringDays((prev) => ({
+      ...prev,
+      [weekdayIndex]: {
         enabled: false,
         clinic: '',
         fromHour: '',
         toHour: '',
         note: '',
-      }),
-      ...patch,
-    },
-  }));
-};
+        ...(prev[weekdayIndex] || {}),
+        ...patch,
+      },
+    }));
+  };
 
   const applyRecurring = () => {
     const next = { ...selectedDays };
@@ -758,7 +774,7 @@ export default function ProdocsClinicAvailabilityApp() {
       </div>
 
       <div className="mx-auto max-w-7xl space-y-6">
-        <Card className="rounded-[24px] border-0 shadow-sm overflow-hidden sticky top-4 z-10">
+        <Card className={cn('rounded-[24px] border-0 shadow-sm overflow-hidden', !isMobile && 'sticky top-4 z-10')}>
           <div className="h-2" style={{ background: `linear-gradient(90deg, ${BRAND.dark}, ${BRAND.mint})` }} />
           <CardContent className="py-4 px-4 md:px-6">
             <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-4 items-center">
@@ -907,7 +923,10 @@ export default function ProdocsClinicAvailabilityApp() {
                     {`התאריכים עד ${formatDisplayDate(addDays(freezeUntil, -1))} נעולים לעריכה. ימי שבת אינם ניתנים לבחירה.`}
                   </div>
 
-                  <div className="flex flex-wrap gap-2">
+                  <div
+                    className="flex flex-wrap gap-2"
+                    style={isMobile ? { width: '100%', overflowX: 'auto', flexWrap: 'nowrap', paddingBottom: 4 } : undefined}
+                  >
                     {visibleMonths.map((m) => {
                       const active = m.getMonth() === activeMonth.getMonth() && m.getFullYear() === activeMonth.getFullYear();
 
@@ -917,7 +936,10 @@ export default function ProdocsClinicAvailabilityApp() {
                           variant={active ? 'default' : 'outline'}
                           onClick={() => setActiveMonth(m)}
                           className="rounded-full"
-                          style={active ? { background: BRAND.dark } : { borderColor: BRAND.border, color: BRAND.dark }}
+                          style={{
+                            ...(active ? { background: BRAND.dark } : { borderColor: BRAND.border, color: BRAND.dark }),
+                            ...(isMobile ? { whiteSpace: 'nowrap', flex: '0 0 auto', paddingInline: '0.85rem' } : {}),
+                          }}
                         >
                           {monthNames[m.getMonth()]} {m.getFullYear()}
                         </Button>
@@ -929,22 +951,37 @@ export default function ProdocsClinicAvailabilityApp() {
                 {holidayLoading ? <div className="text-sm" style={{ color: BRAND.textSoft }}>טוען חגים ומועדים…</div> : null}
                 {holidayError ? <div className="text-sm" style={{ color: BRAND.danger }}>{holidayError}</div> : null}
 
-                <div className="grid grid-cols-7 gap-2">
-                  {weekdayNames.map((d, idx) => (
+                <div
+                  className="grid grid-cols-7"
+                  style={{ gap: isMobile ? '0.3rem' : '0.5rem' }}
+                >
+                  {(isMobile ? mobileWeekdayNames : weekdayNames).map((d, idx) => (
                     <div
-                      key={d}
-                      className="text-center font-medium text-sm py-2"
-                      style={{ color: idx === 6 ? BRAND.danger : BRAND.dark }}
+                      key={`${d}-${idx}`}
+                      className="text-center font-medium py-2"
+                      style={{
+                        color: idx === 6 ? BRAND.danger : BRAND.dark,
+                        fontSize: isMobile ? '0.75rem' : '0.875rem',
+                      }}
                     >
                       {d}
                     </div>
                   ))}
                 </div>
 
-                <div className="grid grid-cols-7 gap-2">
+                <div
+                  className="grid grid-cols-7"
+                  style={{ gap: isMobile ? '0.3rem' : '0.5rem' }}
+                >
                   {monthGrid.map((date, idx) => {
                     if (!date) {
-                      return <div key={idx} className="h-28 rounded-[20px]" />;
+                      return (
+                        <div
+                          key={idx}
+                          className="rounded-[20px]"
+                          style={{ height: isMobile ? 84 : 112 }}
+                        />
+                      );
                     }
 
                     const key = formatISO(date);
@@ -958,8 +995,10 @@ export default function ProdocsClinicAvailabilityApp() {
                         type="button"
                         onClick={() => toggleDay(date)}
                         disabled={disabled}
-                        className="min-h-[144px] rounded-[20px] p-2 border text-right transition flex flex-col"
+                        className="rounded-[20px] border text-right transition flex flex-col"
                         style={{
+                          minHeight: isMobile ? 104 : 144,
+                          padding: isMobile ? '0.45rem' : '0.5rem',
                           borderColor: selected ? BRAND.selectedBorder : BRAND.border,
                           borderWidth: selected ? 2 : 1,
                           background: disabled ? '#EEF2F2' : selected ? BRAND.selectedBg : '#FFF',
@@ -969,13 +1008,25 @@ export default function ProdocsClinicAvailabilityApp() {
                           cursor: disabled ? 'not-allowed' : 'pointer',
                         }}
                       >
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="text-base font-semibold">
+                        <div className="flex items-start justify-between gap-1">
+                          <div
+                            style={{
+                              fontSize: isMobile ? '0.72rem' : '1rem',
+                              fontWeight: 700,
+                              lineHeight: 1.2,
+                            }}
+                          >
                             {formatDisplayDate(date)}
                           </div>
                         </div>
 
-                        <div className="mt-2 text-xs leading-5">
+                        <div
+                          className="mt-2"
+                          style={{
+                            fontSize: isMobile ? '0.62rem' : '0.75rem',
+                            lineHeight: isMobile ? 1.35 : 1.6,
+                          }}
+                        >
                           {date.getDay() === 6
                             ? 'שבת - לא זמין'
                             : disabled
@@ -986,22 +1037,34 @@ export default function ProdocsClinicAvailabilityApp() {
                         </div>
 
                         <div
-                          className="mt-2 text-xs leading-5 min-h-[52px] rounded-xl px-2 py-2 break-words whitespace-normal font-semibold"
+                          className="mt-2 rounded-xl break-words whitespace-normal font-semibold"
                           style={{
+                            minHeight: isMobile ? 34 : 52,
+                            padding: isMobile ? '0.35rem 0.4rem' : '0.5rem',
+                            fontSize: isMobile ? '0.58rem' : '0.75rem',
+                            lineHeight: isMobile ? 1.25 : 1.6,
                             background: holidays.length ? '#E2F3EC' : 'transparent',
                             color: holidays.length ? BRAND.dark : (disabled ? '#92A8AD' : BRAND.textSoft),
                             border: holidays.length ? `1px solid ${BRAND.mint}` : 'none',
+                            overflow: 'hidden',
                           }}
                         >
                           {holidays.length ? holidays.join(' | ') : ' '}
                         </div>
 
                         {selected ? (
-                          <div className="mt-auto text-xs truncate" style={{ fontWeight: 700, color: BRAND.dark }}>
+                          <div
+                            className="mt-auto truncate"
+                            style={{
+                              fontWeight: 700,
+                              color: BRAND.dark,
+                              fontSize: isMobile ? '0.62rem' : '0.75rem',
+                            }}
+                          >
                             {selectedDays[key].clinic || 'נבחר'}
                           </div>
                         ) : (
-                          <div className="mt-auto text-xs opacity-0">.</div>
+                          <div className="mt-auto opacity-0" style={{ fontSize: isMobile ? '0.62rem' : '0.75rem' }}>.</div>
                         )}
                       </button>
                     );
@@ -1012,12 +1075,12 @@ export default function ProdocsClinicAvailabilityApp() {
           </div>
 
           <div className="space-y-6">
-            <Card className="rounded-[28px] border-0 shadow-sm sticky top-[200px]">
+            <Card className={cn('rounded-[28px] border-0 shadow-sm', !isMobile && 'sticky top-6')}>
               <CardHeader>
                 <CardTitle style={{ color: BRAND.dark }}>ימים שנבחרו</CardTitle>
               </CardHeader>
 
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 max-h-[78vh] overflow-auto">
                 <div>
                   <Label>הערה כללית</Label>
                   <Textarea

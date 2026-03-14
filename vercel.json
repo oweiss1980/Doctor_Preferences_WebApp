@@ -6,7 +6,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "frame-ancestors 'self' https://*.wixsite.com https://*.wix.com https://editor.wix.com https://manage.wix.com"
+          "value": "frame-ancestors 'self' https://www.prodocs.co.il https://prodocs.co.il https://*.wixsite.com https://www.wixsite.com https://*.wix.com https://editor.wix.com https://manage.wix.com;"
         }
       ]
     }

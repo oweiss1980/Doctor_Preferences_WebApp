@@ -413,11 +413,9 @@ function ManualPopup({
         background: BRAND.overlay,
         zIndex: 99999,
         display: 'flex',
-        alignItems: isMobile ? 'flex-end' : 'center',
+        alignItems: 'flex-start',
         justifyContent: 'center',
-        padding: isMobile ? '0.75rem' : '1.5rem',
-      }}
-    >
+        padding: isMobile ? '0.5rem' : '0.75rem 1rem',
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
@@ -499,7 +497,7 @@ function ManualPopup({
             טופס בחירת זמינות למרפאות - מדריך שימוש כללי.
           </div>
 
-          <div className="space-y-4">
+          
             {manualSections.map((section) => (
               <div
                 key={section.title}
@@ -579,6 +577,7 @@ export default function ProdocsClinicAvailabilityApp() {
   );
 
   useEffect(() => {
+    const media = windowuseEffect(() => {
     const media = window.matchMedia('(max-width: 767px)');
     const updateIsMobile = () => setIsMobile(media.matches);
 
@@ -591,6 +590,11 @@ export default function ProdocsClinicAvailabilityApp() {
 
     media.addListener(updateIsMobile);
     return () => media.removeListener(updateIsMobile);
+  }, []);
+
+  useEffect(() => {
+    setIsManualOpen(true);
+  }, []);true);
   }, []);
 
   useEffect(() => {
@@ -907,9 +911,7 @@ export default function ProdocsClinicAvailabilityApp() {
 
   return (
     <>
-      <ManualPopup open={isManualOpen} onClose={() => setIsManualOpen(false)} isMobile={isMobile} />
-
-      <div className="min-h-screen p-3 md:p-8" dir="rtl" style={{ background: BRAND.bg }}>
+      <ManualPopup open={isManualOpen} onClose={() => setIsManualOpen(false)} isMobile={isMo<div className="min-h-screen p-2 md:p-5" dir="rtl" style={{ background: BRAND.bg }}>nd: BRAND.bg }}>
         <div
           ref={pdfRenderRef}
           dir="rtl"
@@ -996,13 +998,10 @@ export default function ProdocsClinicAvailabilityApp() {
               })}
             </div>
           </div>
-        </div>
-
-        <div className="mx-auto max-w-7xl space-y-4 md:space-y-6">
+        <div className="mx-auto max-w-7xl space-y-3 md:space-y-4">3 md:space-y-4">
           <Card className={cn('rounded-[24px] border-0 shadow-sm overflow-hidden', !isMobile && 'sticky top-4 z-10')}>
-            <div className="h-2" style={{ background: `linear-gradient(90deg, ${BRAND.dark}, ${BRAND.mint})` }} />
-            <CardContent className={cn('py-4 px-4 md:px-6', isMobile && 'pt-4')}>
-              <div className={cn('grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-4 items-center', isMobile && 'gap-3')}>
+            <div className="h-2" style={{ background: `linear-gradient(90deg, ${BRAND.dark}, ${BRAND.mint})` }} CardContent className={cn('py-3 px-3 md:px-5', isMobile && 'pt-3')}bile && 'pt-3')}>
+              <divgrid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-3 items-centerp-3 items-center', isMobile && 'gap-3')}>
                 <div className="flex flex-col items-center text-center">
                   <img src={logoUrl} alt="PRODOCS" className="w-40 md:w-56 h-auto mb-2" crossOrigin="anonymous" referrerPolicy="no-referrer" />
                   <div className="text-lg md:text-xl font-semibold" style={{ color: BRAND.dark }}>פרודוקס - שירותי רפואה</div>
@@ -1034,12 +1033,9 @@ export default function ProdocsClinicAvailabilityApp() {
                 </div>
               </div>
             </CardContent>
-          </Card>
-
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 md:gap-6">
-            <div className="xl:col-span-2 space-y-4 md:space-y-6">
+          </C<div className="grid grid-cols-1 xl:grid-cols-3 gap-3 md:gap-4">gap-3 md:gap-<div className="xl:col-span-2 space-y-3 md:space-y-4">3 md:space-y-4">
               <Card className="rounded-[28px] border-0 shadow-sm">
-                <CardHeader className={isMobile ? 'p-4 pb-3' : ''}>
+ CardHeader className={isMobile ? 'p-3 pb-2' : 'p-5 pb-3'}'p-3 pb-2' : 'p-5 pb-3'}>
                   <CardTitle className={cn('flex items-center gap-2', isMobile && 'flex-wrap')} style={{ color: BRAND.dark }}>
                     <Building2 className="h-5 w-5" />
                     רשימת מרפאות מועדפת
@@ -1047,9 +1043,7 @@ export default function ProdocsClinicAvailabilityApp() {
                       {' '}– אין חובה למלא. רק אם מרפאתך אינה מופיעה ברשימה
                     </span>
                   </CardTitle>
-                </CardHeader>
-
-                <CardContent className={cn('space-y-4', isMobile && 'p-4 pt-0')}>
+                </CardHeCardContent className={cn('space-y-3', isMobile && 'p-3 pt-0')}isMobile && 'p-3 pt-0')}>
                   <div className="flex flex-wrap gap-2">
                     {clinicOptions.map((clinic) => (
                       <Badge key={clinic} className="rounded-full px-3 py-1" style={{ background: '#EAF3F0', color: BRAND.dark }}>
@@ -1067,8 +1061,7 @@ export default function ProdocsClinicAvailabilityApp() {
                 </CardContent>
               </Card>
 
-              <Card className="rounded-[28px] border-0 shadow-sm">
-                <CardHeader className={isMobile ? 'p-4 pb-3' : ''}>
+              <Card className="rounded-[28px] border-0 shadoCardHeader className={isMobile ? 'p-3 pb-2' : 'p-5 pb-3'}obile ? 'p-3 pb-2' : 'p-5 pb-3'}>
                   <CardTitle className={isMobile ? 'leading-7' : ''} style={{ color: BRAND.dark }}>
                     זמינות קבועה לפי יום בשבוע
                     <span className="text-sm font-normal" style={{ color: BRAND.textSoft }}>
@@ -1078,16 +1071,14 @@ export default function ProdocsClinicAvailabilityApp() {
                   <div className="text-sm mt-2" style={{ color: BRAND.textSoft }}>
                     מילוי אחד השדות מפעיל את היום אוטומטית.
                   </div>
-                </CardHeader>
-
-                <CardContent className={cn('grid grid-cols-1 md:grid-cols-2 gap-4', isMobile && 'p-4 pt-0')}>
+                CardContent className={cn('grid grid-cols-1 md:grid-cols-2 gap-3', isMobile && 'p-3 pt-0')}gap-3', isMobile && 'p-3 pt-0')}>
                   {recurringWeekdayIndexes.map((idx) => {
                     const name = weekdayNames[idx];
                     const rule = recurringDays[idx] || { clinic: '', fromHour: '', toHour: '', note: '' };
                     const isActive = isRecurringRuleActive(rule);
 
                     return (
-                      <div key={idx} className="rounded-[24px] p-4 space-y-3" style={{ border: `1px solid ${BRAND.border}`, background: '#FFF' }}>
+     className="rounded-[24px] p-3 md:p-4 space-y-3" style={{ border: `1px solid ${isActive ? BRAND.selectedBorder : BRAND.border}`, background: isActive ? '#EAF3F0' : '#F8FBFA', boxShadow: isActive ? '0 0 0 3px rgba(116,176,155,0.18)' : 'none' }}${isActive ? BRAND.selectedBorder : BRAND.border}`, background: isActive ? '#EAF3F0' : '#F8FBFA', boxShadow: isA>
                         <div className="flex items-center justify-between gap-3">
                           <div className="font-medium" style={{ color: BRAND.dark }}>{name}</div>
                           <Badge
@@ -1154,21 +1145,16 @@ export default function ProdocsClinicAvailabilityApp() {
                       החל קביעות על התקופה הפתוחה
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
-
-              <Card className="rounded-[28px] border-0 shadow-sm">
-                <CardHeader className={isMobile ? 'p-4 pb-3' : ''}>
+                </CardContCardHeader className={isMobile ? 'p-3 pb-2' : 'p-5 pb-3'}lassName="rounded-[28px] border-0 shadow-sm">
+                <CardHeader className={isMobile ? 'p-3 pb-2' : 'p-5 pb-3'}>
                   <CardTitle className={cn('flex items-center gap-2', isMobile && 'items-start')} style={{ color: BRAND.dark }}>
                     <CalendarDays className="h-5 w-5 shrink-0 mt-0.5" />
                     בחירה ביומן
                     <span className="text-sm font-normal" style={{ color: BRAND.textSoft }}>
-                      {' '}– לא ניתן לשנות את השבועיים הקרובים מהיום. ניתן לבחור או להסיר באופן פרטני כל אחד מהתאריכים או להוסיף הערה פרטנית לכל יום שנבחר.
-                    </span>
-                  </CardTitle>
+                      {' '}– לא ניתן לשנות את השבועיים הקרובים מהיום. ניתן לבחור או להסיר באופן פרטני כל אחד מהתאריכים או להוסיף הערה פרטנית לכCardContent className={cn('space-y-3', isMobile && 'p-3 pt-0')}rdTitle>
                 </CardHeader>
 
-                <CardContent className={cn('space-y-4', isMobile && 'p-4 pt-0')}>
+                <CardContent className={cn('space-y-3', isMobile && 'p-3 pt-0')}>
                   <div className={cn('flex flex-wrap items-center justify-between gap-3', isMobile && 'flex-col items-stretch')}>
                     <div className="text-sm" style={{ color: BRAND.textSoft }}>
                       {`התאריכים עד ${formatDisplayDate(addDays(freezeUntil, -1))} נעולים לעריכה. ימי שבת אינם ניתנים לבחירה.`}
@@ -1352,19 +1338,13 @@ export default function ProdocsClinicAvailabilityApp() {
                           )}
                         </button>
                       );
-                    })}
-                  </div>
-                </CardContent>
+              <div className="space-y-3 md:space-y-4">           </CardContent>
               </Card>
             </div>
 
-            <div className="space-y-4 md:space-y-6">
-              <Card className={cn('rounded-[28px] border-0 shadow-sm', !isMobile && 'sticky top-6')}>
-                <CardHeader className={isMobile ? 'p-4 pb-3' : ''}>
-                  <CardTitle style={{ color: BRAND.dark }}>ימים שנבחרו</CardTitle>
-                </CardHeader>
-
-                <CardContent className={cn('space-y-4 max-h-[78vh] overflow-auto', isMobile && 'p-4 pt-0 max-h-none overflow-visible')}>
+            <div className="space-y-3 md:space-y-4">CardHeader className={isMobile ? 'p-3 pb-2' : 'p-5 pb-3'}] border-0 shadow-sm', !isMobile && 'sticky top-6')}>
+                <CardHeader className={isMobile ? 'p-3 pb-2' : 'p-5 pb-3'}>
+   CardContent className={cn('space-y-3 max-h-[78vh] overflow-auto', isMobile && 'p-3 pt-0 max-h-none overflow-visible')}         <CardContent className={cn('space-y-3 max-h-[78vh] overflow-auto', isMobile && 'p-3 pt-0 max-h-none overflow-visible')}>
                   <div>
                     <Label>הערה כללית</Label>
                     <Textarea
